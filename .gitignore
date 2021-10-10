@@ -14,6 +14,7 @@ dist
 build
 *.sqlite
 *.sqlite3
+*.spec
 *.log
 *.h5
 demo*
