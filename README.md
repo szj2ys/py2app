@@ -1,11 +1,24 @@
-
+```shell
 pyinstaller --noconfirm \
 --name news \
 --add-data="README.md:." \
 --add-data="datasets/*:datasets" \
 --hidden-import=sqlstar.backends.mysql \
---icon finance.png \
+--icon finance.ico \
 -Fw finance.py
+```
+
+
+## Windows
+```shell
+pyinstaller --noconfirm ^
+--name news ^
+--add-data="README.md:." ^
+--add-data="datasets/*:datasets" ^
+--hidden-import=sqlstar.backends.mysql ^
+--icon finance.ico ^
+-Fw finance.py
+```
 
 
 
