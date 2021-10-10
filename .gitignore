@@ -10,6 +10,8 @@ __MACOSX/
 # C extensions
 *.so
 *.db
+dist
+build
 *.sqlite
 *.sqlite3
 *.log
