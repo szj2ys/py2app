@@ -1,3 +1,0 @@
-([('news',
-   '/Users/a12345/Music/GithubProjects/py2app/dist/news',
-   'EXECUTABLE')],)
