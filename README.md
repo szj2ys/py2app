@@ -13,3 +13,6 @@ pyinstaller --noconfirm \
 ## REFERENCES
 
 - [Tkinter](https://blog.csdn.net/nire_yeyu/category_9877892.html)
+
+- [icon8](http://www.ico8.net/index.php?action=make)
+
