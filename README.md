@@ -3,17 +3,11 @@ pyinstaller --noconfirm \
 --name news \
 --add-data="README.md:." \
 --add-data="datasets/*:datasets" \
---hidden-import=pandas \
+--hidden-import=sqlstar.backends.mysql \
 --icon finance.png \
 -Fw finance.py
 
 
-pyinstaller --noconfirm \
---name news \
---add-data="README.md:." \
---add-data="datasets/*:datasets" \
---icon finance.png \
--Fw finance.py
 
 
 ## REFERENCES
