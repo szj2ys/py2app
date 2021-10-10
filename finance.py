@@ -119,8 +119,8 @@ if __name__ == '__main__1':
 
 if __name__ == '__main__':
     helper = Helper()
-    DATASETS = join(expanduser('~/Downloads'), 'datasets')
-    RESULTS = join(expanduser('~/Downloads'), 'results')
+    DATASETS = join(expanduser('~'), 'Downloads', 'datasets')
+    RESULTS = join(expanduser('~'), 'Downloads', 'results')
     pathlib.Path(RESULTS).mkdir(exist_ok=True, parents=True)
     files = listdir(DATASETS)
     for file in files:

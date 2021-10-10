@@ -1,13 +1,20 @@
 
-pyinstaller -i finance.png -Fw finance.py
+pyinstaller --noconfirm \
+--name news \
+--add-data="README.md:." \
+--add-data="datasets/*:datasets" \
+--hidden-import=pandas \
+--icon finance.png \
+-Fw finance.py
 
-pyinstaller -i finance.png -Fw finance.spec
 
+pyinstaller --noconfirm \
+--name news \
+--add-data="README.md:." \
+--add-data="datasets/*:datasets" \
+--icon finance.png \
+-Fw finance.py
 
-datas=[
-                 ( '*.py', '.' ),
-                 ( 'datasets/*', 'datasets' ),
-             ],
 
 ## REFERENCES
 
