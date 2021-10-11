@@ -4,9 +4,15 @@ import tkinter.messagebox
 from os.path import dirname, abspath, join, expanduser
 from os import listdir
 import pathlib
+import sqlstar  # pip install sqlstar==3.0.8
 
 # 获取项目根目录
 ROOT = dirname(abspath(__file__))
+
+host_office = 'rm-wz9s90lao15s6j4v2ro.mysql.rds.aliyuncs.com'
+passwd = 'G2W9iPwpAqF4R#202'
+mysql = sqlstar.Database(f'mysql://jydb:{passwd}@' f'{host_office}:3306/jydb')
+mysql.connect()
 
 
 class Helper:
@@ -19,26 +25,12 @@ class Helper:
         # gil_ashares = self._get_gil_hk_ashare_pool()
         return gil_ashares
 
-    def get_mysql_connect(self):
-        try:
-            # import sqlstar  # pip install sqlstar==3.0.7
-
-            host_office = 'rm-wz9s90lao15s6j4v2ro.mysql.rds.aliyuncs.com'
-            passwd = 'G2W9iPwpAqF4R#202'
-            mysql = sqlstar.Database(f'mysql://jydb:{passwd}@'
-                                     f'{host_office}:3306/jydb')
-            mysql.connect()
-            return mysql
-        except:
-            pass
-
     def _get_gil_cn_ashare_pool(self):
         """下载A股股票池"""
         command = """
             select secucode, chinameabbr, secuabbr, chiname, listeddate,listedstate from SecuMain 
      where (SecuCategory=1) and ((SecuMarket=83) or (SecuMarket=90))
         """
-        mysql = self.get_mysql_connect()
         # 81-三板市场, 83-上海证券交易所, 90-深圳证券交易所;
         df = mysql.fetch_df(command)
         df = df.dropna(subset=['secuabbr'])
@@ -58,7 +50,6 @@ class Helper:
             and secuAbbr not in ('阿里巴巴')
             -- and (TraCurrUnit=1100)
                 """
-        mysql = self.get_mysql_connect()
         df = mysql.fetch_df(command)
         df = df.dropna(subset=['secuabbr'])
         df = df.drop_duplicates()
@@ -98,11 +89,30 @@ class Helper:
 
         name_code_dic = {**chinameabbr_code_pair, **secuabbr_code_pair}
 
-        with open('datasets/name_code.json', "w", encoding='utf-8') as f:
+        with open(join(ROOT, 'datasets', 'name_code.json'),
+                  "w",
+                  encoding='utf-8') as f:
             f.write(str(name_code_dic))
 
+    def get_name_code_dic_from_database(self):
+        """
+
+        :param :
+        :return:
+        """
+        gil_ashares = self.get_gil_ashares()
+        chinameabbr_code_pair = dict(gil_ashares[[
+            'chinameabbr', 'secucode'
+        ]].dropna(subset=['chinameabbr']).drop_duplicates().values)
+
+        secuabbr_code_pair = dict(gil_ashares[['secuabbr', 'secucode'
+                                               ]].drop_duplicates().values)
+
+        name_code_dic = {**chinameabbr_code_pair, **secuabbr_code_pair}
+        return name_code_dic
+
     @staticmethod
-    def get_name_code_dic():
+    def get_name_code_dic_from_file():
         """
 
         :param :
@@ -115,18 +125,38 @@ class Helper:
 
 
 if __name__ == '__main__1':
+    import sqlstar  # pip install sqlstar==3.0.7
+
+    host_office = 'rm-wz9s90lao15s6j4v2ro.mysql.rds.aliyuncs.com'
+    passwd = 'G2W9iPwpAqF4R#202'
+    mysql = sqlstar.Database(f'mysql://jydb:{passwd}@'
+                             f'{host_office}:3306/jydb')
+    mysql.connect()
+
+    df = mysql.fetch_df(
+        """select secucode, chinameabbr, secuabbr, chiname, listeddate,listedstate from SecuMain 
+     where (SecuCategory=1) and ((SecuMarket=83) or (SecuMarket=90))""")
+    print(df)
+
+    tkinter.Tk().withdraw()
+    tkinter.messagebox.showinfo("提示", "执行完成")
+
+if __name__ == '__main__1':
     Helper().update_name_code_json()
 
 if __name__ == '__main__':
     helper = Helper()
-    DATASETS = join(expanduser('~'), 'Downloads', 'datasets')
-    RESULTS = join(expanduser('~'), 'Downloads', 'results')
+    # DATASETS = join(expanduser('~'), 'Downloads', 'datasets')
+    DATASETS = join(expanduser('~'), 'Desktop', 'datasets')
+    # RESULTS = join(expanduser('~'), 'Downloads', 'results')
+    RESULTS = join(expanduser('~'), 'Desktop', 'results')
     pathlib.Path(RESULTS).mkdir(exist_ok=True, parents=True)
     files = listdir(DATASETS)
     for file in files:
         sentence = open(join(DATASETS, file), 'r', encoding='utf8').read()
 
-        name_code_dic = helper.get_name_code_dic()
+        name_code_dic = helper.get_name_code_dic_from_database()
+        # name_code_dic = helper.get_name_code_dic_from_file()
 
         for name, code in name_code_dic.items():
             sentence = sentence.replace(name, name + '(' + code + ')')
